@@ -216,18 +216,17 @@ const _sendBeacon = (options: RequestOptions) => {
 const AVAILABLE_TRANSPORTS: { transport: RequestOptions['transport']; method: (options: RequestOptions) => void }[] = []
 
 // We add the transports in order of preference
+if (fetch) {
+    AVAILABLE_TRANSPORTS.push({
+        transport: 'fetch',
+        method: _fetch,
+    })
+}
 
 if (XMLHttpRequest) {
     AVAILABLE_TRANSPORTS.push({
         transport: 'XHR',
         method: xhr,
-    })
-}
-
-if (fetch) {
-    AVAILABLE_TRANSPORTS.push({
-        transport: 'fetch',
-        method: _fetch,
     })
 }
 
@@ -250,7 +249,7 @@ export const request = (_options: RequestOptions) => {
         compression: options.compression,
     })
 
-    const transport = options.transport ?? 'XHR'
+    const transport = options.transport ?? 'fetch'
 
     const transportMethod =
         find(AVAILABLE_TRANSPORTS, (t) => t.transport === transport)?.method ?? AVAILABLE_TRANSPORTS[0].method
